@@ -417,9 +417,8 @@ class PageNavigationFrameworkState extends State<PageNavigationFramework> {
       await initializeNotificationsPlatform();
 
       bool isChangelogShown = showChangelog(context);
-      bool isRatingPopupShown = false;
       if (isChangelogShown == false) {
-        isRatingPopupShown = openRatingPopupCheck(context);
+        openRatingPopupCheck(context);
       }
 
       await setDailyNotifications(context);
@@ -429,12 +428,12 @@ class PageNavigationFrameworkState extends State<PageNavigationFramework> {
       initializeLocalizedMonthNames();
 
       if (entireAppLoaded == false) {
-        await runAllCloudFunctions(context);
-      }
-
-      // Do this after cloud functions attempt (i.e. if user is not signed in we can show it)
-      if (isRatingPopupShown == false && isChangelogShown == false) {
-        openBackupReminderPopupCheck(context);
+        // Local startup must not open authentication from saved login preferences.
+        if (googleUser != null) {
+          await runAllCloudFunctions(context);
+        } else {
+          await getExchangeRates();
+        }
       }
 
       // Mark subscriptions as paid AFTER syncing with cloud

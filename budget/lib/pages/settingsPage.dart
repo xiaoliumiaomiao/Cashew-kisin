@@ -28,7 +28,6 @@ import 'package:budget/pages/editCategoriesPage.dart';
 import 'package:budget/pages/editWalletsPage.dart';
 import 'package:budget/pages/notificationsPage.dart';
 import 'package:budget/pages/subscriptionsPage.dart';
-import 'package:budget/widgets/accountAndBackup.dart';
 import 'package:budget/widgets/importDB.dart';
 import 'package:budget/widgets/navigationFramework.dart';
 import 'package:budget/widgets/notificationsSettings.dart';
@@ -211,38 +210,32 @@ class MorePages extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              appStateSettings["showBillSplitterShortcut"] == true &&
-                      hasSideNavigation == false
-                  ? Expanded(
-                      child: SettingsContainerOpenPage(
-                        openPage: BillSplitter(),
-                        title: "bill-splitter".tr(),
-                        icon: appStateSettings["outlinedIcons"]
-                            ? Icons.summarize_outlined
-                            : Icons.summarize_rounded,
-                        isOutlined: true,
-                      ),
-                    )
-                  : notificationsGlobalEnabled
-                      ? Expanded(
-                          child: SettingsContainerOpenPage(
-                            openPage: NotificationsPage(),
-                            title: navBarIconsData["notifications"]!.label.tr(),
-                            icon: navBarIconsData["notifications"]!.iconData,
-                            isOutlined: true,
-                          ),
-                        )
-                      : SizedBox.shrink(),
-              if (hasSideNavigation == false)
+          if ((appStateSettings["showBillSplitterShortcut"] == true &&
+                  hasSideNavigation == false) ||
+              notificationsGlobalEnabled)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Expanded(
-                    child: GoogleAccountLoginButton(
-                  key: settingsGoogleAccountLoginButtonKey,
-                )),
-            ],
-          ),
+                  child: appStateSettings["showBillSplitterShortcut"] == true &&
+                          hasSideNavigation == false
+                      ? SettingsContainerOpenPage(
+                          openPage: BillSplitter(),
+                          title: "bill-splitter".tr(),
+                          icon: appStateSettings["outlinedIcons"]
+                              ? Icons.summarize_outlined
+                              : Icons.summarize_rounded,
+                          isOutlined: true,
+                        )
+                      : SettingsContainerOpenPage(
+                          openPage: NotificationsPage(),
+                          title: navBarIconsData["notifications"]!.label.tr(),
+                          icon: navBarIconsData["notifications"]!.iconData,
+                          isOutlined: true,
+                        ),
+                ),
+              ],
+            ),
           if (hasSideNavigation == false)
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -612,11 +605,6 @@ class SettingsPageContent extends StatelessWidget {
         ExportDB(),
 
         ImportDB(),
-
-        GoogleAccountLoginButton(
-          isOutlinedButton: false,
-          forceButtonName: "google-drive".tr(),
-        ),
       ],
     );
   }

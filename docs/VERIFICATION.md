@@ -126,3 +126,33 @@ Android 首次构建发现旧字符集插件 Java target 1.8 与 Kotlin target 1
 | 检查 | `apksigner verify`、`zipalign -c -p 4`、包信息检查均通过 |
 
 可以按应用更新流程覆盖上一测试包；原 APK 保留在 `output/cashew-personal-5.4.3-test.apk`。本次仍未在用户手机上安装或验收，不将 Web/Widget 证据视为真机验收。截图为 `.tooling/verification/transaction-selection-before.png`、`transaction-selection-after-two.png` 和 `transaction-selection-action-button.png`。
+
+## 首次引导和 Google 登录入口移除
+
+2026-10-12：首次引导缩为欢迎和本地预算/币种设置两页，末页箭头可见并有原本的 `Let's Go!` 提示。移除手机 More 页、备份设置区域和桌面侧栏的 Google 登录按钮；全局登录浮层与启动时 Drive 备份登录提醒也移除。启动时只有当前 `googleUser` 会话存在才执行原云同步链路，匿名启动保留公共汇率更新，避免旧登录偏好触发认证邀请。
+
+没有修改数据库 schema、默认账户/分类、可选首次预算保存、用户账本、认证配置或后端云函数。原有手动云功能保留；旧账户偏好没有清空，但匿名启动不再使用这些偏好自动登录。
+
+- 引导真实 Widget 测试先出现旧三页流程的 RED：点击两次后仍未完成。修改后新增 **4/4** 通过，覆盖 Android 风格和 iOS 模拟布局的完成按钮、`hasOnboarded` 持久化、返回调用页，以及通过真实金额输入保存一笔 **250** 的月预算。Windows fixture 使用系统 SQLite 的独立内存库，不打开用户数据库。
+- 登录入口真实 Widget 测试先出现 **3** 个 RED：手机 More、设置和桌面侧栏均发现登录组件；修改后 **3/3** 通过，同时断言原财务账户、导航和 CSV/DB 工具保留。
+- 最终完整回归 `flutter test --no-pub --reporter expanded` 退出 **0**，**13/13** 通过，包括此前交易多选和自定义颜色测试。
+- 最终分析退出 **0**：**0 errors、140 warnings、5013 infos**。两处因删除入口而成为无用的引用已清理；SQLite 测试依赖显式声明为开发依赖，沿用原锁定的 **2.4.3**，没有升级依赖版本。原有 lint 提示仍保留。
+- Web HTML 编译和 `scripts/build-apk.ps1 -Optimized` 都退出 **0**。仍有原字体/Gradle 插件警告，未扩大为依赖升级。
+- 独立源码审查未发现可确认的新增缺陷，报告在本机 `.git/local-login-review.md`。入口实现和 RED/GREEN 报告在 `.git/onboarding-local-report.md` 与 `.git/login-settings-report.md`。
+
+最终 Web 版本使用独立浏览器测试资料和 390×844 页面，操作真实两页引导后进入主页，没有出现 Google 登录页。重载后仍直接进入主页，没有再次引导或登录邀请。手机 More 没有登录格，设置下方保留 `Export/Import CSV File` 与 `Export/Import Cashew Data File`，没有 Google Drive 登录按钮。1200×800 下观察桌面侧栏无登录行，并实际点击原 Settings 按钮成功进入设置。捕获 `pageerror` 为 **0**。
+
+浏览器定位使用 Flutter 辅助功能语义；仅测试页面的 DOM 添加原有绘制层点击适配样式，未修改应用源码。为了加载最终构建，仅清理该独立测试资料的 service worker/HTTP cache，没有清理其 IndexedDB 或偏好。截图在 `.tooling/verification/local-login-*.png`。本次没有执行 CSV/DB 文件导入导出，也没有测试真实旧 Google 登录偏好的升级会话、OAuth、慢网络、通知或云同步。
+
+| 更新包 | 实际信息 |
+| --- | --- |
+| 文件 | `output/cashew-personal-5.4.3-local-test.apk` |
+| 大小 | **89,738,023 bytes / 85.58 MiB** |
+| SHA-256 | `d84a89f5b7be82d4c4a68cdbc85ba85a33ccaac6f3df76d3a18593eee2d7ab5d` |
+| 包名 / 版本 | `com.budget.tracker_app`，**5.4.3 / 416** |
+| Android API | minSdk **23**，target/compileSdk **34** |
+| 签名 | 与前两测试包同一 debug 证书，SHA-256 `270284d05430b8d0e31cf1e53a86a5ed3c9404c738337924a8cbba6a289ecd29`；v1/v2 验证成功 |
+| 检查 | `apksigner verify`、`zipalign -c -p 4` 退出 **0**；包信息与启动 Activity 检查通过，无可调试标志 |
+| 本机下载 | `http://127.0.0.1:5381/cashew-personal-5.4.3-local-test.apk`，HEAD **200**，长度与 SHA-256 匹配导出文件 |
+
+可以覆盖更新上一测试包，旧包仍保留。尚未在 Android 真机或模拟器安装，浏览器与 Widget 测试不替代手机验收，也不表示已经推送、合并或正式发布。
