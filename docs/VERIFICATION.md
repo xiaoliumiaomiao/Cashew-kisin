@@ -105,3 +105,24 @@ Debug 包也已成功构建并验证，但包含约 244 MB 的 Vulkan 调试层�
 Android 首次构建发现旧字符集插件 Java target 1.8 与 Kotlin target 17 不一致；只将精确名单中的旧 Kotlin 插件目标对齐至 1.8，其余 Plus 插件的 Java/Kotlin 17 配置保留。最终两种编译模式均成功。构建仍有旧 Flutter Gradle 应用方式和部分插件废弃 API 警告，未扩展为全面依赖升级。
 
 以上 APK、日志、证书和包信息保存在本地忽略的 `output`、`.tooling/verification` 中。APK 未在真机或模拟器中安装启动；Google 登录、云功能、通知、自动支付和原签名升级仍不属于已验收内容。同包名但不同签名的官方版不能直接被此测试包覆盖，不应为了安装测试而直接卸载存有账本数据的应用。
+
+## 交易多选交互更新
+
+2026-10-12：长按进入选择模式后，单击同一列表中的条目切换选中状态；取消最后一项后恢复普通的详情入口。共享条目组件中的分类图标、付款/贷款按钮、类型按钮和备注在选择模式内也将点击交给整行，避免触发详情或记账动作。复选框拖动选择保留，不可选条目和其他列表仍按原方式处理。
+
+- 修改前：通过正常 Preview Demo 入口建立独立示例账本，交易 Tab 长按 Transit 后出现 `1 selected`，单击不相邻的 Coffee 后实际进入 **Edit Transaction**。
+- 修改后：在同一账本、390×844 的最终 Web 编译版本中重复操作，出现 **2 selected**，标题保持 **Transactions**。再点击付款按钮出现 **3 selected**，付款按钮仍为 **Pay?**；点击已选项逐步取消，全部清空后点击 Coffee 正常进入详情。捕获 `pageerror` 为 **0**。没有注入数据库记录或选择状态。
+- 真实 Widget 回归先观察到两个 RED 失败：条目与分类图标单击均未加入第四行；修改后新增 **5/5** 测试通过，全套 **6/6** 通过。覆盖非相邻行、取消并退出、内层动作、iOS 布局复选框拖动、`allowSelect=false` 和列表隔离。
+- 分析退出 **0**，**0 errors、140 warnings、5032 infos**，总数与前次记录一致；仍保留原项目 lint 提示。Web 与 Android 优化测试 APK 构建均退出 **0**。
+- 独立源码审查通过，未发现 P1/P2。原始报告在本地 `.git/transaction-selection-report.md`、`.git/transaction-selection-review.md`。
+
+| 更新包 | 实际信息 |
+| --- | --- |
+| 文件 | `output/cashew-personal-5.4.3-multiselect-test.apk` |
+| 大小 | **89,770,782 bytes / 85.61 MiB** |
+| SHA-256 | `3c01bc1687a5b904d6db6980fcc246d7d25f634ee9318c365620d5715d6f2af1` |
+| 包名 / 版本 | 与上一测试包相同：`com.budget.tracker_app`，**5.4.3 / 416** |
+| 签名 | 与上一测试包同一 debug 证书，SHA-256 `270284d05430b8d0e31cf1e53a86a5ed3c9404c738337924a8cbba6a289ecd29` |
+| 检查 | `apksigner verify`、`zipalign -c -p 4`、包信息检查均通过 |
+
+可以按应用更新流程覆盖上一测试包；原 APK 保留在 `output/cashew-personal-5.4.3-test.apk`。本次仍未在用户手机上安装或验收，不将 Web/Widget 证据视为真机验收。截图为 `.tooling/verification/transaction-selection-before.png`、`transaction-selection-after-two.png` 和 `transaction-selection-action-button.png`。
