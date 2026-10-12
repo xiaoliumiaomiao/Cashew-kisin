@@ -398,7 +398,6 @@ class TitlesSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        AskForTitlesToggle(),
         AutoTitlesToggle(),
       ],
     );

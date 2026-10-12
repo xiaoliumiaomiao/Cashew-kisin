@@ -27,6 +27,7 @@ import 'package:budget/widgets/ratingPopup.dart';
 import 'package:budget/widgets/selectedTransactionsAppBar.dart';
 import 'package:budget/widgets/util/keepAliveClientMixin.dart';
 import 'package:budget/widgets/textWidgets.dart';
+import 'package:budget/widgets/transactionEntry/transactionEntry.dart';
 import 'package:budget/widgets/transactionEntry/swipeToSelectTransactions.dart';
 import 'package:budget/widgets/viewAllTransactionsButton.dart';
 import 'package:budget/widgets/navigationSidebar.dart';
@@ -221,6 +222,64 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         isHomeScreenSectionEnabled(context, "showUsernameWelcomeBanner");
     bool useSmallBanner = showWelcomeBanner == false;
 
+    Widget homeMenuButton = Tooltip(
+      message: "edit-home".tr(),
+      child: IconButton(
+        padding: EdgeInsetsDirectional.all(15),
+        onPressed: () {
+          pushRoute(context, EditHomePage());
+        },
+        icon: Icon(appStateSettings["outlinedIcons"]
+            ? Icons.more_vert_outlined
+            : Icons.more_vert_rounded),
+      ),
+    );
+
+    // Reserve the original layout without hidden controls receiving focus.
+    Widget headerPlaceholder(Widget child) {
+      return ExcludeFocus(
+        child: Visibility(
+          visible: false,
+          maintainState: true,
+          maintainAnimation: true,
+          maintainSize: true,
+          child: child,
+        ),
+      );
+    }
+
+    Widget buildHomeHeader({required bool fixedMenu}) {
+      Widget welcomeBanner = HomePageWelcomeBannerSmall(
+        showUsername: showUsername,
+        showGreeting: showGreeting,
+        username: appStateSettings["username"] ?? "",
+      );
+      return Padding(
+        padding: EdgeInsetsDirectional.only(top: useSmallBanner ? 13 : 0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            useSmallBanner
+                ? Expanded(
+                    child: fixedMenu
+                        ? headerPlaceholder(welcomeBanner)
+                        : welcomeBanner,
+                  )
+                : SizedBox.shrink(),
+            fixedMenu
+                ? Material(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    shape: CircleBorder(),
+                    child: homeMenuButton,
+                  )
+                : headerPlaceholder(homeMenuButton),
+          ],
+        ),
+      );
+    }
+
     List<String> homePageSectionsFullScreenCenter = [];
     List<String> homePageSectionsFullScreenLeft = [];
     List<String> homePageSectionsFullScreenRight = [];
@@ -258,35 +317,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   controller: _scrollController,
                   children: [
                     PreviewDemoWarning(),
-                    if (useSmallBanner) SizedBox(height: 13),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        useSmallBanner
-                            ? Expanded(
-                                child: HomePageWelcomeBannerSmall(
-                                  showUsername: showUsername,
-                                  showGreeting: showGreeting,
-                                  username: appStateSettings["username"] ?? "",
-                                ),
-                              )
-                            : SizedBox.shrink(),
-                        Tooltip(
-                          message: "edit-home".tr(),
-                          child: IconButton(
-                            padding: EdgeInsetsDirectional.all(15),
-                            onPressed: () {
-                              pushRoute(context, EditHomePage());
-                            },
-                            icon: Icon(appStateSettings["outlinedIcons"]
-                                ? Icons.more_vert_outlined
-                                : Icons.more_vert_rounded),
-                          ),
-                        ),
-                      ],
-                    ),
+                    buildHomeHeader(fixedMenu: false),
                     // Wipe all remaining pixels off - sometimes graphics artifacts are left behind
                     Container(
                         height: 1,
@@ -406,6 +437,28 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
+            ),
+            ValueListenableBuilder<Map<String, List<String>>>(
+              valueListenable: globalSelectedID,
+              builder: (context, selectedIDs, child) {
+                if ((selectedIDs["0"] ?? []).isNotEmpty)
+                  return SizedBox.shrink();
+                return PositionedDirectional(
+                  top: MediaQuery.paddingOf(context).top,
+                  start: 0,
+                  end: 0,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Match the banner height, including demo warnings and
+                      // wrapped greetings, while only the menu stays visible.
+                      headerPlaceholder(PreviewDemoWarning()),
+                      buildHomeHeader(fixedMenu: true),
+                    ],
+                  ),
+                );
+              },
             ),
             SelectedTransactionsAppBar(
               pageID: "0",

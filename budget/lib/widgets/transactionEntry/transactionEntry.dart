@@ -296,6 +296,13 @@ class TransactionEntry extends StatelessWidget {
         {required VoidCallback openContainer,
         required bool selected,
         required bool? areTransactionsBeingSelected}) {
+      // Let the row handle taps while selecting, preserving the checkbox's
+      // own drag gesture for swipe selection.
+      Widget disableActionsDuringSelection(Widget child) => IgnorePointer(
+            ignoring: allowSelect != false &&
+                areTransactionsBeingSelected == true,
+            child: child,
+          );
       Widget transactionSelectionCheck = enableSelectionCheckmark
           ? TransactionSelectionCheck(
               areTransactionsBeingSelected: areTransactionsBeingSelected,
@@ -305,7 +312,7 @@ class TransactionEntry extends StatelessWidget {
               selectTransaction: selectTransaction,
             )
           : SizedBox.shrink();
-      Widget categoryIcon = CategoryIcon(
+      Widget categoryIcon = disableActionsDuringSelection(CategoryIcon(
         cacheImage: true,
         category: category,
         categoryPk: transaction.categoryFk,
@@ -314,7 +321,7 @@ class TransactionEntry extends StatelessWidget {
         margin: EdgeInsetsDirectional.zero,
         borderRadius: 100,
         onTap: openContainer,
-      );
+      ));
       Widget actionButton(EdgeInsetsDirectional padding) {
         Widget actionButton = TransactionEntryActionButton(
           padding: padding,
@@ -336,7 +343,7 @@ class TransactionEntry extends StatelessWidget {
               ? Container(child: actionButton)
               : actionButton,
         );
-        return Stack(
+        return disableActionsDuringSelection(Stack(
             clipBehavior: Clip.none,
             alignment: AlignmentDirectional.bottomStart,
             children: [
@@ -374,7 +381,7 @@ class TransactionEntry extends StatelessWidget {
                   }),
                 ),
               ),
-            ]);
+            ]));
       }
 
       double fontSize = getIsFullScreen(context) == false ? 15.5 : 16.5;
@@ -401,12 +408,12 @@ class TransactionEntry extends StatelessWidget {
         objectiveLoan: objectiveLoan,
         showExcludedBudgetTag: showExcludedBudgetTag,
       );
-      Widget noteIcon = TransactionEntryNote(
+      Widget noteIcon = disableActionsDuringSelection(TransactionEntryNote(
         transaction: transaction,
         iconColor: iconColor,
-      );
+      ));
       bool showNote = transaction.note.toString().trim() != "";
-      Widget note = Row(
+      Widget note = disableActionsDuringSelection(Row(
         children: [
           TransactionEntryNote(
             transaction: transaction,
@@ -422,16 +429,17 @@ class TransactionEntry extends StatelessWidget {
             ),
           ),
         ],
-      );
+      ));
 
       Widget amount = TransactionEntryAmount(
         transaction: transaction,
         showOtherCurrency: showOtherCurrency,
         unsetCustomCurrency: unsetCustomCurrency,
       );
-      Widget transactionActionLabelButton = TransactionEntryTypeButton(
+      Widget transactionActionLabelButton =
+          disableActionsDuringSelection(TransactionEntryTypeButton(
         transaction: transaction,
-      );
+      ));
       Widget finalTransactionContainer = appStateSettings[
                   "nonCompactTransactions"] ==
               true
@@ -594,6 +602,8 @@ class TransactionEntry extends StatelessWidget {
                     (controller.value[listID ?? "0"] ?? []).length)
                 : globalSelectedID.select(
                     (controller) =>
+                        (controller.value[listID ?? "0"]!.isNotEmpty)
+                            .toString() +
                         (transactionBefore != null &&
                                 controller.value[listID ?? "0"]!
                                     .contains(transactionBefore?.transactionPk))
@@ -659,6 +669,20 @@ class TransactionEntry extends StatelessWidget {
                           ? Theme.of(context).colorScheme.background
                           : containerColor,
                       button: (openContainer) {
+                        void onTransactionTap() {
+                          final selectedIds =
+                              globalSelectedID.value[listID ?? "0"] ?? [];
+                          if (allowSelect != false && selectedIds.isNotEmpty) {
+                            selectTransaction(
+                              transaction,
+                              selectedIds.contains(transaction.transactionPk),
+                              false,
+                            );
+                          } else {
+                            openContainer();
+                          }
+                        }
+
                         return FlashingContainer(
                           loopCount: loopCount,
                           isAnimating: triggerAnimation,
@@ -680,9 +704,7 @@ class TransactionEntry extends StatelessWidget {
                             onLongPress: () {
                               selectTransaction(transaction, selected, true);
                             },
-                            onTap: () async {
-                              openContainer();
-                            },
+                            onTap: onTransactionTap,
                             child: AnimatedContainer(
                               clipBehavior: Clip.none,
                               duration: const Duration(seconds: 1),

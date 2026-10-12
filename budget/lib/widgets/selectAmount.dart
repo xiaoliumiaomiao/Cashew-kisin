@@ -60,6 +60,8 @@ class SelectAmount extends StatefulWidget {
     this.next,
     this.popWithAmount = false,
     this.nextLabel,
+    this.secondaryAction,
+    this.secondaryLabel,
     this.currencyKey,
     this.walletPkForCurrency,
     this.onlyShowCurrencyIcon = false,
@@ -83,6 +85,8 @@ class SelectAmount extends StatefulWidget {
   final VoidCallback? next;
   final bool popWithAmount;
   final String? nextLabel;
+  final VoidCallback? secondaryAction;
+  final String? secondaryLabel;
   final String? currencyKey;
   final String? walletPkForCurrency;
   final bool onlyShowCurrencyIcon;
@@ -891,13 +895,14 @@ class _SelectAmountState extends State<SelectAmount> {
               if (widget.hideNextButton == false)
                 Padding(
                   padding: widget.padding,
-                  child: AnimatedSwitcher(
-                    duration: Duration(milliseconds: 500),
-                    child: widget.allowZero || (amount != "" && amount != "0")
+                  child: Builder(builder: (context) {
+                    final primaryAction = widget.allowZero ||
+                            (amount != "" && amount != "0")
                         ? Button(
                             key: Key("addSuccess"),
                             label: widget.nextLabel ?? "",
                             width: MediaQuery.sizeOf(context).width,
+                            expandedLayout: widget.secondaryAction != null,
                             onTap: () {
                               if (widget.allowZero && amount == "") {
                                 widget.setSelectedAmount(0, "");
@@ -920,10 +925,39 @@ class _SelectAmountState extends State<SelectAmount> {
                             key: Key("addNoSuccess"),
                             label: widget.nextLabel ?? "",
                             width: MediaQuery.sizeOf(context).width,
+                            expandedLayout: widget.secondaryAction != null,
                             onTap: () {},
                             color: Colors.grey,
+                          );
+                    if (widget.secondaryAction == null) {
+                      return AnimatedSwitcher(
+                        duration: Duration(milliseconds: 500),
+                        child: primaryAction,
+                      );
+                    }
+                    return IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: Button(
+                              label: widget.secondaryLabel ?? "",
+                              onTap: widget.secondaryAction!,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .tertiaryContainer,
+                              textColor: Theme.of(context)
+                                  .colorScheme
+                                  .onTertiaryContainer,
+                              expandedLayout: true,
+                            ),
                           ),
-                  ),
+                          SizedBox(width: 10),
+                          Expanded(child: primaryAction),
+                        ],
+                      ),
+                    );
+                  }),
                 )
             ],
           ),

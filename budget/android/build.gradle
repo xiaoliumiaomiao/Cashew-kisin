@@ -1,13 +1,12 @@
 buildscript {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '1.9.22'
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:8.3.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.14'
     }
@@ -16,13 +15,31 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
 }
 
 rootProject.buildDir = '../build'
+// These older plugins predate AGP's required namespace property.
+def legacyPluginNamespaces = [
+    flutter_charset_detector_android: 'com.madlonkay.flutter_charset_detector',
+    notification_listener_service: 'notification.listener.service',
+    system_theme: 'com.bruno.system_theme',
+]
 subprojects {
+    project.plugins.withId('com.android.library') {
+        if (legacyPluginNamespaces.containsKey(project.name)) {
+            project.android.namespace = legacyPluginNamespaces[project.name]
+        }
+    }
+    project.plugins.withId('kotlin-android') {
+        if (legacyPluginNamespaces.containsKey(project.name)) {
+            // Match Java 1.8 after observing these Kotlin tasks target 17 under JDK 17.
+            project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                kotlinOptions.jvmTarget = '1.8'
+            }
+        }
+    }
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(':app')
 }

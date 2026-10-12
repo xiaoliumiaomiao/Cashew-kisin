@@ -21,7 +21,6 @@ import 'package:budget/pages/homePage/homePage.dart';
 import 'package:budget/pages/notificationsPage.dart';
 import 'package:budget/pages/objectivesListPage.dart';
 import 'package:budget/pages/onBoardingPage.dart';
-import 'package:budget/pages/premiumPage.dart';
 import 'package:budget/pages/settingsPage.dart';
 import 'package:budget/pages/subscriptionsPage.dart';
 import 'package:budget/pages/transactionsListPage.dart';
@@ -288,7 +287,6 @@ GlobalKey<ObjectivesListPageState> objectivesListPageStateKey = GlobalKey();
 GlobalKey<UpcomingOverdueTransactionsState>
     upcomingOverdueTransactionsStateKey = GlobalKey();
 GlobalKey<CreditDebtTransactionsState> creditDebtTransactionsKey = GlobalKey();
-GlobalKey<ProductsState> purchasesStateKey = GlobalKey();
 GlobalKey<AccountsPageState> accountsPageStateKey = GlobalKey();
 GlobalKey<GoogleAccountLoginButtonState> settingsGoogleAccountLoginButtonKey =
     GlobalKey();
@@ -419,9 +417,8 @@ class PageNavigationFrameworkState extends State<PageNavigationFramework> {
       await initializeNotificationsPlatform();
 
       bool isChangelogShown = showChangelog(context);
-      bool isRatingPopupShown = false;
       if (isChangelogShown == false) {
-        isRatingPopupShown = openRatingPopupCheck(context);
+        openRatingPopupCheck(context);
       }
 
       await setDailyNotifications(context);
@@ -429,16 +426,14 @@ class PageNavigationFrameworkState extends State<PageNavigationFramework> {
       runNotificationPayLoads(context);
       runQuickActionsPayLoads(context);
       initializeLocalizedMonthNames();
-      initializeStoreAndPurchases(
-          context: context, popRouteWithPurchase: false);
 
       if (entireAppLoaded == false) {
-        await runAllCloudFunctions(context);
-      }
-
-      // Do this after cloud functions attempt (i.e. if user is not signed in we can show it)
-      if (isRatingPopupShown == false && isChangelogShown == false) {
-        openBackupReminderPopupCheck(context);
+        // Local startup must not open authentication from saved login preferences.
+        if (googleUser != null) {
+          await runAllCloudFunctions(context);
+        } else {
+          await getExchangeRates();
+        }
       }
 
       // Mark subscriptions as paid AFTER syncing with cloud
