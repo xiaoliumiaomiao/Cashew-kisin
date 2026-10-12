@@ -773,33 +773,8 @@ class _AddTransactionPageState extends State<AddTransactionPage>
           return;
         }
         if (widget.startInitialAddTransactionSequence == false) return;
-        if (appStateSettings["askForTransactionTitle"]) {
-          openBottomSheet(
-            context,
-            // Only allow full snap when entering a title
-            popupWithKeyboard: true,
-            SelectTitle(
-              selectedTitle: selectedTitle,
-              setSelectedNote: setSelectedNoteController,
-              setSelectedTitle: setSelectedTitleController,
-              setSelectedCategory: setSelectedCategory,
-              setSelectedSubCategory: setSelectedSubCategory,
-              next: () {
-                afterSetTitle();
-              },
-              noteInputController: _noteInputController,
-              setSelectedNoteController: setSelectedNoteController,
-              setSelectedDateTime: (DateTime date) {
-                setState(() {
-                  selectedDate = date;
-                });
-              },
-              selectedDate: widget.selectedDate,
-            ),
-          );
-        } else {
-          afterSetTitle();
-        }
+        // Start with categories even when an older install requested a title.
+        afterSetTitle();
       });
     }
     if (widget.selectedBudget != null) {
@@ -927,18 +902,11 @@ class _AddTransactionPageState extends State<AddTransactionPage>
 
     if (mainAndSubcategory.main != null &&
         mainAndSubcategory.ignoredSubcategorySelection == false) {
-      selectAmountPopup(
-        next: () async {
-          await addTransaction();
-          popRoute(context);
-          popRoute(context);
-        },
-        nextLabel: textAddTransaction,
-      );
+      selectAmountPopup(quickAdd: true);
     }
   }
 
-  selectAmountPopup({VoidCallback? next, String? nextLabel}) async {
+  selectAmountPopup({bool quickAdd = false}) async {
     await openBottomSheet(
       context,
       fullSnap: true,
@@ -946,25 +914,37 @@ class _AddTransactionPageState extends State<AddTransactionPage>
         title: "enter-amount".tr(),
         hasPadding: false,
         underTitleSpace: false,
-        child: SelectAmount(
-          enableWalletPicker: true,
-          selectedWalletPk: selectedWalletPk,
-          setSelectedWalletPk: setSelectedWalletPk,
-          padding: EdgeInsetsDirectional.symmetric(horizontal: 18),
-          walletPkForCurrency: selectedWalletPk,
-          // onlyShowCurrencyIcon:
-          //     appStateSettings[
-          //             "selectedWalletPk"] ==
-          //         selectedWalletPk,
-          onlyShowCurrencyIcon: true,
-          amountPassed: (selectedAmount ?? "0").toString(),
-          setSelectedAmount: setSelectedAmount,
-          next: next ??
-              () async {
+        child: Builder(builder: (sheetContext) {
+          final amountRoute = ModalRoute.of(sheetContext);
+          return SelectAmount(
+            enableWalletPicker: true,
+            selectedWalletPk: selectedWalletPk,
+            setSelectedWalletPk: setSelectedWalletPk,
+            padding: EdgeInsetsDirectional.symmetric(horizontal: 18),
+            walletPkForCurrency: selectedWalletPk,
+            // onlyShowCurrencyIcon:
+            //     appStateSettings[
+            //             "selectedWalletPk"] ==
+            //         selectedWalletPk,
+            onlyShowCurrencyIcon: true,
+            amountPassed: (selectedAmount ?? "0").toString(),
+            setSelectedAmount: setSelectedAmount,
+            next: () async {
+              if (quickAdd) {
+                if (await addTransaction() == false || mounted == false) return;
+                // The amount sheet may already have been dismissed during saving.
+                if (amountRoute?.isCurrent == true) popRoute(context);
+                if (ModalRoute.of(context)?.isCurrent == true)
+                  popRoute(context);
+              } else {
                 popRoute(context);
-              },
-          nextLabel: nextLabel ?? "set-amount".tr(),
-        ),
+              }
+            },
+            nextLabel: quickAdd ? textAddTransaction : "set-amount".tr(),
+            secondaryAction: quickAdd ? () => popRoute(context) : null,
+            secondaryLabel: quickAdd ? "continue-editing".tr() : null,
+          );
+        }),
       ),
     );
   }

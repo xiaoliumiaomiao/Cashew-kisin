@@ -7,6 +7,7 @@ import 'package:budget/widgets/exportDB.dart';
 import 'package:budget/widgets/importCSV.dart';
 import 'package:budget/widgets/importDB.dart';
 import 'package:budget/widgets/navigationSidebar.dart';
+import 'package:budget/widgets/notificationsSettings.dart';
 import 'package:budget/widgets/settingsContainers.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -35,9 +36,49 @@ void main() {
           widget is SettingsContainerOpenPage &&
           widget.title == 'Notifications');
       expect(tester.getSize(notifications).width, greaterThan(350));
+      final settings = find.text('Settings & Customization');
+      final spending = find.text('All Spending Summary');
+      final about = find.text('About Cashew');
+      expect(tester.getTopLeft(settings).dy,
+          lessThan(tester.getTopLeft(spending).dy));
+      expect(tester.getTopLeft(spending).dy,
+          lessThan(tester.getTopLeft(notifications).dy));
+      expect(tester.getBottomLeft(notifications).dy,
+          lessThan(tester.getTopLeft(about).dy));
       expect(find.byType(GoogleAccountLoginButton), findsNothing);
       expect(find.text('Login'), findsNothing);
     } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+  });
+
+  testWidgets('mobile More keeps Notifications with the Bill Splitter shortcut',
+      (tester) async {
+    appStateSettings['showBillSplitterShortcut'] = true;
+    await pumpSettingsSurface(tester, const MorePages());
+    try {
+      expect(find.text('Notifications'), findsOneWidget);
+      expect(find.text('Bill Splitter'), findsOneWidget);
+      expect(tester.getTopLeft(find.text('Notifications')).dy,
+          lessThan(tester.getTopLeft(find.text('About Cashew')).dy));
+      expect(find.byType(GoogleAccountLoginButton), findsNothing);
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+  });
+
+  testWidgets('mobile More omits Notifications when unavailable',
+      (tester) async {
+    final originalNotificationsEnabled = notificationsGlobalEnabled;
+    notificationsGlobalEnabled = false;
+    appStateSettings['showBillSplitterShortcut'] = true;
+    try {
+      await pumpSettingsSurface(tester, const MorePages());
+      expect(find.text('Notifications'), findsNothing);
+      expect(find.text('Bill Splitter'), findsOneWidget);
+      expect(find.text('Accounts'), findsOneWidget);
+    } finally {
+      notificationsGlobalEnabled = originalNotificationsEnabled;
       await tester.pumpWidget(const SizedBox.shrink());
     }
   });

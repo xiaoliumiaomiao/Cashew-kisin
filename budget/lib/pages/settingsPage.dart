@@ -111,9 +111,7 @@ class MoreActionsPageState extends State<MoreActionsPage> {
             ],
           ),
         ],
-        listWidgets: [
-          MorePages()
-        ],
+        listWidgets: [MorePages()],
       );
     });
   }
@@ -125,6 +123,19 @@ class MorePages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool hasSideNavigation = getIsFullScreen(context);
+    final notificationsShortcut = Row(
+      children: [
+        Expanded(
+          child: SettingsContainerOpenPage(
+            openPage: NotificationsPage(),
+            title: navBarIconsData["notifications"]!.label.tr(),
+            icon: navBarIconsData["notifications"]!.iconData,
+            isOutlined: true,
+            isWideOutlined: true,
+          ),
+        ),
+      ],
+    );
 
     return Padding(
       padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
@@ -168,6 +179,8 @@ class MorePages extends StatelessWidget {
                 ),
               ],
             ),
+          if (notificationsGlobalEnabled && hasSideNavigation == false)
+            notificationsShortcut,
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -210,29 +223,23 @@ class MorePages extends StatelessWidget {
               ),
             ],
           ),
-          if ((appStateSettings["showBillSplitterShortcut"] == true &&
-                  hasSideNavigation == false) ||
-              notificationsGlobalEnabled)
+          if (notificationsGlobalEnabled && hasSideNavigation)
+            notificationsShortcut,
+          if (appStateSettings["showBillSplitterShortcut"] == true &&
+              hasSideNavigation == false)
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: appStateSettings["showBillSplitterShortcut"] == true &&
-                          hasSideNavigation == false
-                      ? SettingsContainerOpenPage(
-                          openPage: BillSplitter(),
-                          title: "bill-splitter".tr(),
-                          icon: appStateSettings["outlinedIcons"]
-                              ? Icons.summarize_outlined
-                              : Icons.summarize_rounded,
-                          isOutlined: true,
-                        )
-                      : SettingsContainerOpenPage(
-                          openPage: NotificationsPage(),
-                          title: navBarIconsData["notifications"]!.label.tr(),
-                          icon: navBarIconsData["notifications"]!.iconData,
-                          isOutlined: true,
-                        ),
+                  child: SettingsContainerOpenPage(
+                    openPage: BillSplitter(),
+                    title: "bill-splitter".tr(),
+                    icon: appStateSettings["outlinedIcons"]
+                        ? Icons.summarize_outlined
+                        : Icons.summarize_rounded,
+                    isOutlined: true,
+                    isWideOutlined: true,
+                  ),
                 ),
               ],
             ),
