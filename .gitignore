@@ -1,2 +1,6 @@
 # Miscellaneous
 /.vscode/
+
+# Local SDK and dependency cache
+/.tooling/
+/.playwright-mcp/
