@@ -45,4 +45,24 @@ node .\scripts\serve-preview.mjs
 
 主页菜单固定，欢迎文字和内容仍按原设计滚动；交易多选时使用原多选操作栏。会员购买页面、客户端限制及商店初始化移除，财务中的周期性订阅支出仍保留。
 
-本地 Web 验证不替代 Android/iOS 真机验收。Android 工程目前使用旧 AGP/Gradle 配置，若后续制作 APK，需要先按实际依赖要求完成独立的 Android 工具链兼容处理。云备份、Google 登录和共享预算仍依赖原有账号授权及远端服务规则。
+本地 Web 验证不替代 Android/iOS 真机验收。Android 测试包的构建方式见下文。云备份、Google 登录和共享预算仍依赖原有账号授权及远端服务规则。
+
+## Android 测试 APK
+
+Android 构建使用项目内 Temurin JDK **17.0.20.1+1**、Android SDK/Build Tools **34**、AGP **8.3.2** 和 Gradle **8.4**。SDK、Gradle 缓存、调试密钥和临时 Flutter 配置放在 `.tooling` 下；脚本结束后恢复进程环境。旧插件还会自动安装自身所需的 API 30–33 编译平台。
+
+首次准备工具，然后构建：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-android.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\flutter.ps1 pub get
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-apk.ps1 -Optimized
+```
+
+新环境如出现 Android SDK 官方许可提示，应阅读并同意后继续。JDK 与命令行工具压缩包先校验固定 SHA-256 再解压，不替换已有的不同工具目录。
+
+优化测试包导出到 `output\cashew-personal-5.4.3-test.apk`，使用 Release 编译模式和本地测试签名，包含 armv7、arm64 和 x86_64。去掉 `-Optimized` 可生成较大的 Debug 包 `cashew-personal-5.4.3-debug.apk`。脚本打印实际文件、大小和 SHA-256；已有不同内容的导出文件会保留，新产物另加时间与哈希后缀。APK 和工具缓存均不提交 Git。
+
+测试包保留原包名 `com.budget.tracker_app`，使用本地 debug 签名，适用于 Android 6.0 及以上。优化打包时仅通过临时进程变量 `ORG_GRADLE_PROJECT_CASHEW_TEST_SIGNING=true` 选择测试签名，普通正式构建仍使用原 release 签名配置。测试包无法覆盖不同签名的官方版；使用未安装官方版的测试设备，不要为了安装而直接卸载存有账本数据的应用。Google 登录等服务也可能依赖签名授权，本地测试签名不代表这些云功能已获验证。
+
+旧插件的 namespace 和 Java/Kotlin 编译目标在根 Android Gradle 配置中精确补齐，未修改 Pub 缓存或插件功能源码。Flutter 参数直接透传，避免 Windows PowerShell 将 `--debug` 解释为脚本自己的通用参数。

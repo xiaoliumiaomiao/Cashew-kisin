@@ -1,7 +1,5 @@
-param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$FlutterArgs = @()
-)
+# Keep raw arguments: advanced PowerShell parameters consume Flutter's --debug.
+$cashewFlutterArgs = @($args)
 
 $ErrorActionPreference = 'Stop'
 $cashewRoot = Split-Path -Parent $PSScriptRoot
@@ -17,7 +15,7 @@ Push-Location (Join-Path $cashewRoot 'budget')
 try {
     $env:PUB_CACHE = Join-Path $cashewRoot '.tooling\pub-cache'
     $env:FLUTTER_SUPPRESS_ANALYTICS = 'true'
-    & $cashewSdk --suppress-analytics @FlutterArgs
+    & $cashewSdk --suppress-analytics @cashewFlutterArgs
     $cashewExitCode = $LASTEXITCODE
 }
 finally {

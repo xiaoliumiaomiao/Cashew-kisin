@@ -33,6 +33,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
+    namespace 'com.budget.tracker_app'
     compileSdkVersion 34
 
     sourceSets {
@@ -64,6 +65,10 @@ android {
       targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -74,7 +79,10 @@ android {
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            // Only the local test build opts into debug signing; normal releases keep their key.
+            signingConfig project.findProperty('CASHEW_TEST_SIGNING') == 'true'
+                ? signingConfigs.debug
+                : signingConfigs.release
         }
     }
 }

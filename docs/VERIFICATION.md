@@ -76,6 +76,32 @@ node .\scripts\serve-preview.mjs
 
 ## 尚未验证的边界
 
-本记录不证明 Android 原生 Release/APK、iOS 构建、macOS `pod install` 或 Android/iOS 真机已通过。Google 登录、云备份、共享预算、远端权限、真实通知和周期自动支付运行也未完成验收；财务订阅页面可访问不等于整套支付与通知流程已测试。键盘/屏幕阅读器、RTL、大字号与实体设备安全区域也没有在这里列为已验证。
+上文 Web 验证不证明 Android 原生 Release/APK、iOS 构建、macOS `pod install` 或 Android/iOS 真机已通过。Google 登录、云备份、共享预算、远端权限、真实通知和周期自动支付运行也未完成验收；财务订阅页面可访问不等于整套支付与通知流程已测试。键盘/屏幕阅读器、RTL、大字号与实体设备安全区域也没有在这里列为已验证。
 
 本地 Web 构建、浏览器验证、静态审查、真机验收与用户验收是不同证据，本记录不表示已经推送、合并或发布。
+
+## Android 测试 APK 补充验证
+
+2026-10-12 已完成 Android 原生打包，不替代手机安装及使用验收。工具链为项目内 Temurin 17.0.20.1+1、AGP 8.3.2、Gradle 8.4、Kotlin 1.9.22、Android SDK/Build Tools 34。旧插件所需 API 30–33 编译平台由构建工具安装到同一 SDK。
+
+`scripts/build-apk.ps1 -Optimized` 实际退出 **0**，生成 Release 编译模式、debug 测试签名的 APK；原正式签名配置保留。签名开关仅在进程内启用，使用全大写属性避免 Dart 在 Windows 转换环境变量名导致不匹配。
+
+| 项目 | 实际结果 |
+| --- | --- |
+| 文件 | `output/cashew-personal-5.4.3-test.apk` |
+| 大小 | **89,770,795 bytes / 85.61 MiB** |
+| SHA-256 | `61c1806b74ea852c7c62c8cf0dd70d104bcfc32cb07541c09c47d7de3350ef76` |
+| 包名 / 版本 | `com.budget.tracker_app` / **5.4.3**, versionCode **416** |
+| Android API | minSdk **23**，target/compileSdk **34** |
+| 签名 | `apksigner verify --verbose --print-certs` 退出 **0**；v1、v2 校验成功，证书为 Android Debug |
+| 证书 SHA-256 | `270284d05430b8d0e31cf1e53a86a5ed3c9404c738337924a8cbba6a289ecd29` |
+| 对齐 | `zipalign -c -p 4` 退出 **0** |
+| 入口 Activity | `com.budget.tracker_app.MainActivity` |
+| 可调试标志 | 优化 APK 的 badging 无 `application-debuggable` |
+| Dart 回归复验 | `flutter test --no-pub --reporter expanded` 退出 **0**，**1/1 通过** |
+
+Debug 包也已成功构建并验证，但包含约 244 MB 的 Vulkan 调试层，整个包为 445.37 MiB，因此交付优先使用上面的优化测试包。原生产 Dart 代码没有为缩小包体而删减功能。
+
+Android 首次构建发现旧字符集插件 Java target 1.8 与 Kotlin target 17 不一致；只将精确名单中的旧 Kotlin 插件目标对齐至 1.8，其余 Plus 插件的 Java/Kotlin 17 配置保留。最终两种编译模式均成功。构建仍有旧 Flutter Gradle 应用方式和部分插件废弃 API 警告，未扩展为全面依赖升级。
+
+以上 APK、日志、证书和包信息保存在本地忽略的 `output`、`.tooling/verification` 中。APK 未在真机或模拟器中安装启动；Google 登录、云功能、通知、自动支付和原签名升级仍不属于已验收内容。同包名但不同签名的官方版不能直接被此测试包覆盖，不应为了安装测试而直接卸载存有账本数据的应用。
