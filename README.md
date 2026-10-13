@@ -1,272 +1,149 @@
-<h1 align="center" style="font-size:28px; line-height:1"><b>Cashew</b></h1>
+# Cashew-kisin · 个人定制版
 
-
-<div align="center">
-  <a href="https://cashewapp.web.app/">
-    <img alt="Icon" src="promotional/icons/icon.png" width="150px" >
-  </a>
-</div>
-
-
-<br />
-
-<div align="center">
-  <a href="https://apps.apple.com/us/app/cashew-expense-budget-tracker/id6463662930">
-    <img alt="iOS App Store Badge" src="promotional/store-banners/app-store-badge.png" height="60px">
-  </a>
-  <a href="https://play.google.com/store/apps/details?id=com.budget.tracker_app">
-    <img alt="Google Play Badge" src="promotional/store-banners/google-play-badge.png" height="60px">
-  </a>
-  <a href="https://github.com/jameskokoska/Cashew/releases/">
-    <img alt="GitHub Badge" src="promotional/store-banners/github-badge.png" height="60px">
-  </a>
-  <a href="https://budget-track.web.app/">
-    <img alt="PWA Badge" src="promotional/store-banners/pwa-badge.png" height="60px">
-  </a>
-</div>
-
-<h3 align="center" style="font-size:28px; line-height:1">
-  <a href="https://github.com/jameskokoska/Cashew/issues/725">🚀 Cashew Beta Testing</a>
-</h3>
-
----
-
-<br />
-
-<a href="https://cashewapp.web.app/">
-  <div align="center">
-    <img width="95%" src="promotional/GitHub/SocialPreviewGitHub.png" alt="Promo banner">
-  </div>
-</a>
-
-<br />
-
-Cashew is a full-fledged, feature-rich application designed to empower users in managing their finances effectively. Built using Flutter - with Drift's SQL package, and Firebase - this app offers a seamless and intuitive user experience across various devices. Development started in September 2021.
-
----
-
-## Features
-
-<a href="https://www.youtube.com/watch?v=Oar9pkc7BSc&t=235s">
-  <div align="center">
-    <img width="80%" src="promotional/youtube-promo/thumbnail-oss.png" alt="Review Video">
-  </div>
-</a>
 <p align="center">
-  Cashew was featured on <a href="https://www.youtube.com/watch?v=Oar9pkc7BSc&t=235s">YouTube</a> on 'The Best Free and Open Source Apps in 2024!' (and in the thumbnail!)
+  <img src="promotional/icons/icon.png" alt="Cashew 图标" width="120">
 </p>
 
-<br />
+基于 [jameskokoska/Cashew](https://github.com/jameskokoska/Cashew) 的个人记账定制版本。保留 Cashew 原有的视觉设计、账户、预算、目标、贷款和统计功能，围绕日常记账操作做小幅优化。
 
-<a href="https://www.youtube.com/watch?v=NYZd7IKn1oY&t=536s">
-  <div align="center">
-    <img width="80%" src="promotional/youtube-promo/thumbnail-year-best.png" alt="Review Video">
-  </div>
-</a>
-<p align="center">
-  Cashew was featured on <a href="https://www.youtube.com/watch?v=NYZd7IKn1oY&t=536s">YouTube</a> on 'The Best Apps of 2023!'
-</p>
+本仓库的定制内容已合并到 `main`。应用使用 **Flutter + Drift/SQLite**，Flutter 项目位于 `budget/`；个人版主要围绕本地账本使用，原有云服务代码仍保留。
 
-<br>
+## 定制了什么
 
-<a href="https://www.youtube.com/watch?v=2MwWmqcn--s&t=261s">
-  <div align="center">
-    <img width="80%" src="promotional/youtube-promo/thumbnail.png" alt="Review Video">
-  </div>
-</a>
-<p align="center">
-  Cashew was featured on <a href="https://www.youtube.com/watch?v=2MwWmqcn--s&t=261s">YouTube</a> on 'Top Android Apps! (November 2023)'
-</p>
+| 位置 | 个人版行为 |
+| --- | --- |
+| 主页菜单 | 右上角三个点固定显示，向下滚动后仍可点击；进入交易多选时让位于原选择操作栏。 |
+| Pro 功能 | 移除原客户端的会员限制、购买入口和购买页面，开放多个预算、目标、长期贷款、历史统计及自定义颜色等功能。 |
+| Google 登录入口 | 移除首次引导中的登录页、手机“更多”及备份设置中的登录入口、桌面侧栏登录按钮和启动登录邀请。首次引导保留欢迎与本地预算/币种设置两页。 |
+| 交易多选 | 长按一条交易进入选择模式，随后单击其他条目即可选择或取消选择；全部取消后恢复普通详情入口。 |
+| 新增记账 | 跳过初始“输入标题”，直接进入类别选择；标题和备注仍可在详细表单中填写。 |
+| 快速金额窗口 | 左侧“继续编辑”，右侧“添加交易”；点击窗口外继续编辑的方式保留，已有金额、类别和账户选择不会丢失。 |
+| “更多”页 | 支持通知的平台上，手机“通知”位于从上往下第三行，与设置和全部支出汇总统一全宽对齐；账单分摊快捷入口独立保留。 |
 
-<br>
+**财务中的“订阅”记账仍然保留。** 它表示周期性支出，与已移除的 Pro 购买订阅不同。本轮定制没有修改数据库结构，也没有删除本地账本、CSV 导入导出或 Cashew 数据文件备份功能。
 
-<div align="center">
-  <img width="80%" src="promotional/play-store-feature/play-store-feature.png" alt="Play Store Feature">
-</div>
-<p align="center">
-  Cashew was featured on <a href="https://play.google.com/store/apps/editorial?id=mc_apps_new_on_play_fcp">Google Play's Editorial 'New Apps We Love'</a> (November 2023)!
-</p>
+### 新增记账流程
 
-<br>
+```text
+新增交易 → 选择类别 → 选择子类别（如有）→ 输入金额
+                                         ├─ 继续编辑 → 原详细表单 → 保存
+                                         ├─ 添加交易 → 直接保存
+                                         └─ 点击窗口外 → 原详细表单 → 保存
+```
 
-<a href="https://github.com/nyas1/Material-You-app-list?tab=readme-ov-file#-economy:~:text=MDY%20Celenganku-,MDY%20Cashew,-MDY%20Allowance%20FOSS">
-  <div align="center">
-    <img width="80%" src="promotional/material-apps-feature/material-apps-feature.png" alt="Material Apps List Feature">
-  </div>
-</a>
-<p align="center">
-  Cashew was featured in the <a href="https://github.com/nyas1/Material-You-app-list?tab=readme-ov-file#-economy:~:text=MDY%20Celenganku-,MDY%20Cashew,-MDY%20Allowance%20FOSS">Material You Apps List</a>!
-</p>
+空金额时也可以进入详细编辑。详细表单中的金额修改，以及预算、账户等共用金额窗口，保留原来的单按钮操作。快速保存加入了重复点击和页面跳转保护，避免保存过程中误退出后来打开的窗口。
 
-## Release
+## 已封包的 Android 版本
 
-Check out the [official website](https://cashewapp.web.app/)!
+以下信息对应 **2026-10-12** 封包的个人版 APK：
 
-This application is available on the [App Store](https://apps.apple.com/us/app/cashew-expense-budget-tracker/id6463662930), [Google Play](https://play.google.com/store/apps/details?id=com.budget.tracker_app), [GitHub](https://github.com/jameskokoska/Cashew/releases/) and as a [Web App (PWA)](https://budget-track.web.app/).
+| 项目 | 信息 |
+| --- | --- |
+| 文件名 | `cashew-personal-5.4.3.apk` |
+| 应用版本 | `5.4.3+416` |
+| 包名 | `com.budget.tracker_app` |
+| 最低系统 | Android 6.0 / API 23 |
+| targetSdk / compileSdk | 34 |
+| 文件大小 | 89,672,541 bytes / 85.52 MiB |
+| APK 对应源码提交 | `66d8f3f82dbdcda683c22fa03d3d57dbfbdb4eb2` |
+| 编译与签名 | Release 编译模式，项目本地 debug 签名 |
 
-### Changelog
+SHA-256：
 
-Changes and progress about development is all heavily documented in GitHub [commits](https://github.com/jameskokoska/Cashew/commits/main) and in the [changelog](https://github.com/jameskokoska/Cashew/blob/main/budget/lib/widgets/showChangelog.dart)
+```text
+7e66758ab1b01e764a623aaccb15102c9298a2f939c35ff0aa4c4dcef65d913b
+```
 
-## Key Features
+该 APK 目前保存在开发机的 `output/releases/cashew-personal-5.4.3-66d8f3f8/`，同目录附带 `manifest.json`、`SHA256SUMS.txt` 和封包说明。`output/` 被 Git 忽略，**克隆本仓库不会获得 APK；本 fork 尚未上传 GitHub Releases 附件**。可以按下面的步骤自行构建。
 
-### 💸 Budget Management
+个人版沿用此前测试包的同一签名，可以覆盖更新此前的个人测试版。它不能直接覆盖不同签名的官方版；已有账本的安装不要通过直接卸载来处理签名冲突，先在原应用中导出本地备份。
 
-- Custom Budgets and Time Periods: Set up personalized budgets with flexible time periods, such as monthly, weekly, daily, or any custom time period that suits your financial planning needs. A custom time period is useful if you plan on setting a one-time travel budget!
-- Added Budgets: Selectively add transactions to specific budgets, allowing you to focus on specific expense categories.
-- Category Spending Limits per Budget: Set limits for each category within a budget, ensuring responsible spending.
-- Past Budget History Viewing: Analyze your spending habits over time by accessing past budget history, enabling comparison and tracking of financial progress.
-- Goals: Create spending and saving goals and put transactions towards different purchases or savings. Track your progress towards achieving your financial goals.
+后续重建请保留本机 `.tooling/android-user/debug.keystore`。删除或替换它会使后续安装包失去原签名身份；该密钥不提交 Git，也不随 APK 分发。更多封包信息见 [RELEASE.md](docs/RELEASE.md)。
 
-### 💰 Transaction Management
+新克隆仓库不包含这里的签名密钥，首次构建会生成新的本地测试密钥。只有同一密钥签名的安装包才能互相覆盖更新；新克隆构建的包不能直接覆盖这台开发机此前签名的包。
 
-- Support for Different Transaction Types: Categorize transactions effectively based on types such as upcoming, subscription, repeating, debts (borrowed), and credit (lent). Each type behaves in certain ways in the interface. Pay your upcoming transactions when you're ready, or mark your lent out transactions as collected.
-- Custom Categories: Create personalized categories to organize transactions according to your unique spending habits. Search through multiple icons and select the default option as expenses or income when adding transactions.
-- Custom Titles: Automatically assign transactions with the same name to specific categories, saving time and ensuring consistency. These titles are stored in memory and popup when you add another transaction with a similar name.
-- Search and Filters: Easily search and filter transactions based on various criteria such as date, category, amount, or custom tags, enabling quick access to information.
-- Easy Editing: Long-press and swipe to select multiple budgets, edit accordingly as needed or delete multiple at once.
+## 在 Windows 上构建 APK
 
-### 💱 Financial Flexibility
+需要 Git、PowerShell，以及能下载 Flutter 和 Android 工具的网络环境。脚本使用项目内工具，不要求先安装全局 Flutter、Java 或 Android SDK。
 
-- Multiple Currencies and Accounts: Manage finances across different currencies and accounts with up-to-date conversion rates for accurate calculations and effortless currency conversions. The interface shows the original amount added and the converted amount to the selected account.
-- Switch Accounts and Currencies with Ease: On the homepage, easily select a different account and currency and everything will be converted automatically in an instant.
+### 1. 获取源码
 
-### 🔒 Enhanced Security and Accessibility
+```powershell
+git clone https://github.com/xiaoliumiaomiao/Cashew-kisin.git
+cd Cashew-kisin
+git remote add upstream https://github.com/jameskokoska/Cashew.git
+```
 
-- Biometric Lock: Secure budget data using biometric authentication, adding an extra layer of privacy.
-- Google Login: Conveniently log in to the app using your Google account, ensuring a streamlined and hassle-free authentication process.
+以下命令均在仓库根目录执行。如果已有源码，直接在当前仓库根目录继续。
 
-### 🎨 User Experience and Design
+### 2. 准备本地工具和依赖
 
-- Material You Design: Enjoy a visually appealing and modern interface, following the principles of Material You design for a delightful user experience.
-- Custom Accent Color: Personalize the app by selecting a custom accent color that suits your style, or follow that of the system.
-- Light and Dark Mode: Seamlessly switch between light and dark themes to optimize visibility and reduce eye strain.
-- Customizable Home Screen: Tailor the home screen layout and widgets to display the financial information that matters most to you, providing a personalized and efficient dashboard.
-- Detailed Graph Visuals: Gain valuable insights into spending patterns through detailed and interactive graphs, visualizing financial data at a glance.
-- Beautiful Adaptive UI: A responsive user interface that adapts flawlessly to both web and mobile platforms, providing an immersive and consistent user experience across devices.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-flutter.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-android.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\flutter.ps1 pub get
+```
 
-### ☁ Backup and Syncing
+项目固定使用 Flutter **3.19.6**、Dart **3.3.4**、Temurin JDK **17.0.20.1+1** 和 Android SDK/Build Tools **34**，以兼容当前锁定的依赖。工具与缓存放在 `.tooling/`，脚本只临时设置进程环境，不修改全局 PATH。首次准备 Android 工具时可能需要阅读并接受 SDK 许可。
 
-- Cross-Device Sync: Keep budget data synchronized across all devices, ensuring access to financial information wherever you go.
-- Google Drive Backup: Safeguard budget data by utilizing Google Drive's backup functionality, allowing easy restoration of data if needed.
+### 3. 构建安装包
 
-### 💿 Smart Automation
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build-apk.ps1 -Optimized
+```
 
-- Notifications: Stay informed about important financial events and receive timely reminders for budget goals, transactions, and upcoming due dates.
-- Import CSV Files: Seamlessly import financial data by uploading CSV files, facilitating a smooth transition from other applications or platforms.
-- Import Google Sheets: Seamlessly import Google Sheets tables, quickly importing many transactions from a spreadsheet.
-- App Links: Automatically create transactions with pre-filled data using app linking (documentation below)
+脚本生成 Release 编译、项目本地测试签名的 APK，并打印实际导出路径、大小和 SHA-256。默认导出名为 `output/cashew-personal-5.4.3-test.apk`；已有不同内容的包会保留，新包另加时间和哈希后缀。该构建输出与上方整理后的最终封包目录是两个位置。
 
-## Automation
+本地开发和 APK 构建无需执行 Firebase 部署脚本。仓库继承的 Firebase PR 预览工作流仍需单独核对项目与凭据配置，不属于这里的个人版封包流程。
 
-See the `Automation` section on the FAQ website for information on how to add transactions automatically: https://cashewapp.web.app/faq.html#automation
+## 开发与验证
 
-## Bundled Packages
+运行回归测试和静态分析：
 
-This repository contains, bundled in, modified versions of the discontinued packages listed below. They can be found in the folder `/budget/packages`
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\flutter.ps1 test --no-pub --reporter expanded
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\flutter.ps1 analyze --no-pub --no-fatal-infos --no-fatal-warnings
+```
 
-- https://pub.dev/packages/implicitly_animated_reorderable_list
-- https://pub.dev/packages/sliding_sheet
+启动本机 Web 开发预览：
 
-## Translations
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\flutter.ps1 run -d web-server --web-hostname 127.0.0.1 --web-port 5380 --web-renderer html
+```
 
-The translations are available here: https://docs.google.com/spreadsheets/d/1QQqt28cmrby6JqxLm-oxUXCuM3alniLJ6IRhcPJDOtk/edit?usp=sharing. If you would like to help translate, please reach out on email: dapperappdeveloper@gmail.com
+浏览器打开 `http://127.0.0.1:5380/`，终端按 `q` 退出。该地址用于本地预览，测试时使用独立测试账本。
 
-### To Update Translations
+### 已有验证记录
 
-1. Run `budget\assets\translations\generate-translations.py`
-2. Restart the application
+截至 **2026-10-12** 的封包记录：
 
-## Developer Notes
+- 合并前后完整 Flutter 回归均为 **26/26 通过**，覆盖真实页面操作、独立内存 SQLite 保存、多选和异步保存跳转。
+- 静态分析为 **0 errors、140 warnings、5015 infos**；原项目 lint 提示仍保留。
+- Web 与 Android APK 构建通过，APK v1/v2 签名和 `zipalign` 校验通过。
+- 浏览器实测覆盖主页固定菜单、新增记账两种操作、窗口外继续编辑、标题/备注保存、320 像素窄屏及中文深色主题。
+- “通知”第三行通过 Widget 渲染位置回归验证；Web 平台原本不启用该通知入口。
 
-### Pull Requests and Contributions
+Android 真机安装及视觉效果、真实通知、Google 云服务和 iOS 构建仍需各自验收。移除客户端 Pro 限制不改变远端服务授权；Google/Firebase/Drive 后台仍保留，不能据此认定云功能已经免费开放或验证完成。
 
-Unfortunately, I am currently not accepting contributions due to licensing and credits. Since this application turns some profits, I want to avoid any muddy water when it comes to compensation for contributions. You are free to submit an [issue](https://github.com/jameskokoska/Cashew/issues) and I can consider it!
+详细过程和证据见 [VERIFICATION.md](docs/VERIFICATION.md)。
 
-### Android Release
+## 仓库结构
 
-- To build an app-bundle Android release, run `flutter build appbundle --release`
+| 路径 | 内容 |
+| --- | --- |
+| `budget/lib/` | Flutter 页面、组件和账本逻辑 |
+| `budget/test/` | 页面交互与 SQLite 回归测试 |
+| `budget/assets/` | 图标、字体、语言等原应用资源 |
+| `scripts/` | 项目本地环境、构建与预览脚本 |
+| `.tooling/` | 本机工具、缓存与签名密钥，Git 忽略 |
+| `output/` | 本机 APK、校验文件与封包记录，Git 忽略 |
 
-Note: required Android SDK.
+开发细节见 [DEVELOPMENT.md](docs/DEVELOPMENT.md)。按上述步骤获取源码后，`origin` 指向本个人 fork，`upstream` 指向原 Cashew 仓库；此前的定制分支 `codex/pin-home-menu` 保留，后续可继续通过独立分支做小幅修改。
 
-### iOS Release
+## 上游与许可证
 
-- To build an IPA iOS release, run `flutter build ipa`
+感谢 [jameskokoska](https://github.com/jameskokoska) 及 Cashew 的贡献者提供原应用。本个人 fork 保留其设计和主体功能，定制内容及封包与上游官方商店版分别维护。
 
-Note: requires MacOS.
-
-### Firebase Deployment
-
-- To deploy to firebase, run `firebase deploy`
-
-Note: required Firebase.
-
-### GitHub release
-
-- Create a tag for the current version specified in `pubspec.yaml`
-- `git tag <version>`
-- Push the tag
-- `git push origin <version>`
-- Create the release and upload binaries
-- https://github.com/jameskokoska/Cashew/releases/new
-
-### Scripts
-
-`deploy_and_build_windows.bat`
-
-- Deploy to Firebase and build the apk and appbundle
-
-`open_release_builds.bat`
-
-- Opens the location of the built apk and appbundle
-
-`update_translations.bat`
-
-- Downloads the latest version of Cashew translations. Runs `budget\assets\translations\generate-translations.py`
-
-### Develop Wirelessly on Android
-
-- `adb tcpip 5555`
-- `adb connect <IP>`
-- Get the phone's IP by going to `About Phone` > `Status Information` > `IP Address`
-
-### Migrate Database
-
-1. Make any database changes to the schema and tables
-2. Bump the schema version
-   - Change `int schemaVersionGlobal = ...+1` in `tables.dart`
-3. Make sure you are in application root directory
-   - `cd .\budget\`
-4. Generate database code
-   - Run `dart run build_runner build`
-5. Export the new schema
-   - Generate schema dump for the newly created schema
-   - Replace `[schemaVersion]` in the command below with the value of `schemaVersionGlobal`
-   - Run `dart run drift_dev schema dump lib\database\tables.dart drift_schemas//drift_schema_v[schemaVersion].json`
-   - Read more: https://drift.simonbinder.eu/docs/advanced-features/migrations/#exporting-the-schema
-6. Generate step-by-step migrations
-   - Run `dart run drift_dev schema steps drift_schemas/ lib\database\schema_versions.dart`
-7. Implement migration strategy
-   - Edit `await stepByStep(...)` function in `tables.dart` and add the migration strategy for the new version migration
-
-### Get Platform
-
-- Use `getPlatform()` from `functions.dart`
-- Since `Platform` is not supported on web, we must create a wrapper and always use this to determine the current platform
-
-### Push Route
-
-- If we want to navigate to a new page, stick to `pushRoute(context, page)` function from `functions.dart`
-- It handles the platform routing and `PageRouteBuilder`
-
-### Wallets vs. Accounts
-
-- `Wallets` have been been renamed to `Accounts` on the front-end but internally, the name `Wallet` is still used.
-
-### Objectives vs. Goals
-
-- `Objectives` have been been renamed to `Goals` on the front-end but internally, the name `Objectives` is still used.
-
-### Long Term Loans
-
-- Long term loans create a goal. However, the goals total is not used. Instead the total of the goal is calculated by totalling the proper polarity of transactions of the opposite type. For example, if it was a loan of 100$ lent out, the initial transaction would be 100$ of negative polarity (expense) and that would be the total of the goal. When a payment is made, it is made in the opposite (positive) polarity (income) and added to the total 'paid back'. We can easily find how much is remaining by taking the difference (or the addition including polarities).
+- 上游源码：[jameskokoska/Cashew](https://github.com/jameskokoska/Cashew)。
+- 本 fork：[xiaoliumiaomiao/Cashew-kisin](https://github.com/xiaoliumiaomiao/Cashew-kisin)。
+- 沿用原项目 GNU GPL v3 许可证，具体条款见 [LICENSE](LICENSE)。
