@@ -27,6 +27,30 @@ if (-not (Test-Path -LiteralPath (Join-Path $cashewRoot 'budget\.dart_tool\packa
     throw 'Flutter packages are missing. Run scripts\flutter.ps1 pub get before building with --no-pub.'
 }
 
+# Gradle cannot clean Windows asset directories carrying the ReadOnly flag.
+# Normalize only this variant's generated merge output; never touch source assets.
+$cashewVariantName = if ($Optimized) { 'Release' } else { 'Debug' }
+$cashewMergedAssets = Join-Path $cashewRoot "budget\build\app\intermediates\assets\$cashewMode\merge${cashewVariantName}Assets"
+if (Test-Path -LiteralPath $cashewMergedAssets -PathType Container) {
+    $cashewAssetDirectories = @(Get-Item -LiteralPath $cashewMergedAssets) + @(
+        Get-ChildItem -LiteralPath $cashewMergedAssets -Directory -Recurse -Force
+    )
+    $cashewNormalizedDirectories = 0
+    foreach ($cashewAssetDirectory in $cashewAssetDirectories) {
+        if (($cashewAssetDirectory.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+            throw "Refusing to change attributes through a linked asset directory: $($cashewAssetDirectory.FullName)"
+        }
+        if (($cashewAssetDirectory.Attributes -band [System.IO.FileAttributes]::ReadOnly) -ne 0) {
+            [System.IO.File]::SetAttributes($cashewAssetDirectory.FullName,
+                ($cashewAssetDirectory.Attributes -band (-bnot [System.IO.FileAttributes]::ReadOnly)))
+            $cashewNormalizedDirectories++
+        }
+    }
+    if ($cashewNormalizedDirectories -gt 0) {
+        Write-Host "Normalized ReadOnly flags on $cashewNormalizedDirectories generated asset directories."
+    }
+}
+
 $previousEnvironment = @{}
 $environmentNames = @('JAVA_HOME', 'ANDROID_HOME', 'ANDROID_SDK_ROOT', 'GRADLE_USER_HOME', 'ANDROID_USER_HOME', 'APPDATA', 'PATH', 'ORG_GRADLE_PROJECT_CASHEW_TEST_SIGNING')
 foreach ($environmentName in $environmentNames) {

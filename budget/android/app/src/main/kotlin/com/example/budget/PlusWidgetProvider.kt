@@ -1,4 +1,4 @@
-package com.budget.tracker_app
+package com.kisin.cashew
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
